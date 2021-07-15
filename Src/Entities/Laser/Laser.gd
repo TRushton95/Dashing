@@ -4,6 +4,11 @@ const SPEED := 10
 
 var velocity := Vector2.ZERO
 
+
+func _on_TTLTimer_timeout():
+	queue_free()
+
+
 func init(initial_position: Vector2, direction: int) -> void:
 	position = initial_position
 	
