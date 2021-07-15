@@ -4,8 +4,9 @@ onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
 enum State { STANDING, FALLING, FIRING }
 
-export var MAX_FALL_SPEED := 500
+const MAX_FALL_SPEED := 500
 const GRAVITY_ACCELERATION := 20
+const GLIDE_SPEED := 50
 const WALK_SPEED := 200
 const RUN_SPEED := 400
 const JUMP_SPEED := -700
@@ -14,12 +15,12 @@ var move_speed := WALK_SPEED
 
 var velocity := Vector2.ZERO
 var direction = Enums.Direction.RIGHT
+var gliding := false
 
 var state_stack = [ State.STANDING ]
 
 
 func _on_FiringAnimTimer_timeout() -> void:
-	print("test")
 	_pop_state()
 
 
@@ -46,14 +47,23 @@ func _process(delta: float) -> void:
 		State.FALLING:
 			_process_directional_movement()
 			
+			if Input.is_action_just_pressed("jump"):
+				gliding = true
+			elif Input.is_action_just_released("jump"):
+				gliding = false
+			
 			if is_on_floor():
 				_pop_state()
+				gliding = false
 
 
 func _physics_process(delta: float) -> void:
-	if velocity.y < MAX_FALL_SPEED:
-		velocity.y = velocity.y + GRAVITY_ACCELERATION
-		
+	if gliding:
+		velocity.y = GLIDE_SPEED
+	else:
+		if velocity.y < MAX_FALL_SPEED:
+			velocity.y = velocity.y + GRAVITY_ACCELERATION
+			
 	velocity = move_and_slide(velocity, Vector2.UP)
 
 
