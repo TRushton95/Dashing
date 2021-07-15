@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
-enum State { STANDING, FALLING, FIRING }
+enum State { STANDING, CROUCHING, ROLLING, FALLING, FIRING }
 
 const MAX_FALL_SPEED := 500
 const GRAVITY_ACCELERATION := 20
@@ -10,6 +10,7 @@ const GLIDE_SPEED := 50
 const WALK_SPEED := 200
 const RUN_SPEED := 400
 const JUMP_SPEED := -700
+const ROLL_SPEED := 500
 
 var move_speed := WALK_SPEED
 
@@ -29,6 +30,15 @@ func _on_FiringCooldownTimer_timeout() -> void:
 	is_fire_on_cooldown = false
 
 
+func _on_RollTimer_timeout() -> void:
+	$RollStunTimer.start()
+	velocity.x = 0
+
+
+func _on_RollStunTimer_timeout():
+	_pop_state()
+
+
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("sprint"):
 		move_speed = RUN_SPEED
@@ -42,11 +52,15 @@ func _process(delta: float) -> void:
 			if Input.is_action_just_pressed("jump"):
 				_push_state(State.FALLING)
 				velocity.y = JUMP_SPEED
-				
 			elif Input.is_action_just_pressed("shoot"):
 				_push_state(State.FIRING)
 				velocity.x = 0
 				_shoot()
+			elif Input.is_action_just_pressed("crouch"):
+				velocity.x = 0
+				_push_state(State.CROUCHING)
+			elif Input.is_action_just_pressed("roll"):
+				_roll()
 				
 		State.FALLING:
 			_process_directional_movement()
@@ -62,6 +76,10 @@ func _process(delta: float) -> void:
 			if is_on_floor():
 				_pop_state()
 				gliding = false
+				
+		State.CROUCHING:
+			if Input.is_action_just_released("crouch"):
+				_pop_state()
 
 
 func _physics_process(delta: float) -> void:
@@ -93,6 +111,12 @@ func _shoot() -> void:
 	
 	is_fire_on_cooldown = true
 	$FiringCooldownTimer.start()
+
+
+func _roll() -> void:
+	_push_state(State.ROLLING)
+	velocity.x = ROLL_SPEED * _get_direction_modifier()
+	$RollTimer.start()
 
 
 func _process_directional_movement() -> void:
