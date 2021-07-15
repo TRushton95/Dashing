@@ -16,12 +16,17 @@ var move_speed := WALK_SPEED
 var velocity := Vector2.ZERO
 var direction = Enums.Direction.RIGHT
 var gliding := false
+var is_fire_on_cooldown = false
 
 var state_stack = [ State.STANDING ]
 
 
 func _on_FiringAnimTimer_timeout() -> void:
 	_pop_state()
+
+
+func _on_FiringCooldownTimer_timeout() -> void:
+	is_fire_on_cooldown = false
 
 
 func _process(delta: float) -> void:
@@ -41,7 +46,6 @@ func _process(delta: float) -> void:
 			elif Input.is_action_just_pressed("shoot"):
 				_push_state(State.FIRING)
 				velocity.x = 0
-				$FiringAnimTimer.start()
 				_shoot()
 				
 		State.FALLING:
@@ -51,6 +55,9 @@ func _process(delta: float) -> void:
 				gliding = true
 			elif Input.is_action_just_released("jump"):
 				gliding = false
+				
+			if Input.is_action_just_pressed("shoot"):
+				_shoot()
 			
 			if is_on_floor():
 				_pop_state()
@@ -72,6 +79,9 @@ func _get_direction_modifier() -> int:
 
 
 func _shoot() -> void:
+	if is_fire_on_cooldown:
+		return
+	
 	var laser = laser_scene.instance()
 	var delta_x = $Sprite.texture.get_width() / 2
 	
@@ -80,6 +90,9 @@ func _shoot() -> void:
 	
 	owner.add_child(laser)
 	laser.init(Vector2(x, y), direction)
+	
+	is_fire_on_cooldown = true
+	$FiringCooldownTimer.start()
 
 
 func _process_directional_movement() -> void:
@@ -96,6 +109,9 @@ func _process_directional_movement() -> void:
 func _push_state(state: int) -> void:
 	state_stack.push_front(state)
 	$StateLabel.text = State.keys()[state]
+	
+	if state == State.FIRING:
+		$FiringAnimTimer.start()
 
 
 func _pop_state() -> void:
