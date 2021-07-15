@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
-const MAX_FALL_SPEED = 500
+export var MAX_FALL_SPEED = 500
 const GRAVITY_ACCELERATION = 20
 const WALK_SPEED = 200
 const JUMP_SPEED = -700
