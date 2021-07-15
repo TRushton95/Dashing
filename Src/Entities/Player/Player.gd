@@ -54,5 +54,5 @@ func _shoot() -> void:
 	var x = position.x + (delta_x * _get_direction_modifier())
 	var y = position.y
 	
-	get_parent().add_child(laser)
+	owner.add_child(laser)
 	laser.init(Vector2(x, y), direction)
