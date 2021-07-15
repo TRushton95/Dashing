@@ -2,21 +2,29 @@ extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
-export var MAX_FALL_SPEED = 500
-const GRAVITY_ACCELERATION = 20
-const WALK_SPEED = 200
-const JUMP_SPEED = -700
+export var MAX_FALL_SPEED := 500
+const GRAVITY_ACCELERATION := 20
+const WALK_SPEED := 200
+const RUN_SPEED := 400
+const JUMP_SPEED := -700
+
+var move_speed := WALK_SPEED
 
 var velocity := Vector2.ZERO
 var direction = Enums.Direction.RIGHT
 
 
 func _process(delta: float) -> void:
+	if Input.is_action_just_pressed("sprint"):
+		move_speed = RUN_SPEED
+	elif Input.is_action_just_released("sprint"):
+		move_speed = WALK_SPEED
+	
 	if Input.is_action_pressed("move_left"):
-		velocity.x = -WALK_SPEED
+		velocity.x = -move_speed
 		direction = Enums.Direction.LEFT
 	elif Input.is_action_pressed("move_right"):
-		velocity.x = WALK_SPEED
+		velocity.x = move_speed
 		direction = Enums.Direction.RIGHT
 	else:
 		velocity.x = 0
