@@ -67,8 +67,10 @@ func _process(delta: float) -> void:
 			
 			if Input.is_action_just_pressed("jump"):
 				gliding = true
+				$Sprite/AnimationPlayer.play("Gliding")
 			elif Input.is_action_just_released("jump"):
 				gliding = false
+				$Sprite/AnimationPlayer.play("Falling")
 				
 			if Input.is_action_just_pressed("shoot"):
 				_shoot()
@@ -80,6 +82,8 @@ func _process(delta: float) -> void:
 		State.CROUCHING:
 			if Input.is_action_just_released("crouch"):
 				_pop_state()
+				
+	$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
 
 
 func _physics_process(delta: float) -> void:
@@ -132,6 +136,7 @@ func _process_directional_movement() -> void:
 
 func _push_state(state: int) -> void:
 	state_stack.push_front(state)
+	_update_animation(state)
 	$StateLabel.text = State.keys()[state]
 	
 	if state == State.FIRING:
@@ -140,6 +145,19 @@ func _push_state(state: int) -> void:
 
 func _pop_state() -> void:
 	state_stack.pop_front()
+	_update_animation(state_stack[0])
 	
 	var state = state_stack[0]
 	$StateLabel.text = State.keys()[state]
+
+
+func _update_animation(state: int) -> void:
+	match state:
+		State.STANDING:
+			$Sprite/AnimationPlayer.play("Idle")
+		State.CROUCHING:
+			$Sprite/AnimationPlayer.play("Crouching")
+		State.ROLLING:
+			$Sprite/AnimationPlayer.play("Rolling")
+		State.FALLING:
+			$Sprite/AnimationPlayer.play("Falling")
