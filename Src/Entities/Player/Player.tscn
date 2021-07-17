@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=35 format=2]
 
 [ext_resource path="res://Entities/Player/player_large.png" type="Texture" id=1]
 [ext_resource path="res://Entities/Player/Player.gd" type="Script" id=2]
@@ -17,6 +17,20 @@ tracks/0/keys = {
 "transitions": PoolRealArray( 1 ),
 "update": 1,
 "values": [ 1 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ true ],
+"method": "_set_crouching_hitbox"
+} ]
 }
 
 [sub_resource type="Animation" id=2]
@@ -95,6 +109,20 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 0 ]
 }
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ false ],
+"method": "_set_crouching_hitbox"
+} ]
+}
 
 [sub_resource type="Animation" id=5]
 resource_name = "Rolling"
@@ -118,9 +146,12 @@ tracks/1/loop_wrap = true
 tracks/1/imported = false
 tracks/1/enabled = true
 tracks/1/keys = {
-"times": PoolRealArray( 0.5 ),
-"transitions": PoolRealArray( 1 ),
+"times": PoolRealArray( 0, 0.5 ),
+"transitions": PoolRealArray( 1, 1 ),
 "values": [ {
+"args": [ true ],
+"method": "_set_crouching_hitbox"
+}, {
 "args": [ null ],
 "method": "_on_Roll_animation_finished"
 } ]
@@ -223,7 +254,7 @@ states/Gliding/position = Vector2( 430, 190 )
 states/Idle/node = SubResource( 12 )
 states/Idle/position = Vector2( 225, 129 )
 states/Rolling/node = SubResource( 13 )
-states/Rolling/position = Vector2( 225, 229 )
+states/Rolling/position = Vector2( 225, 228 )
 states/StandingShooting/node = SubResource( 31 )
 states/StandingShooting/position = Vector2( 44, 129 )
 transitions = [ "Idle", "Crouching", SubResource( 16 ), "Idle", "Rolling", SubResource( 17 ), "Crouching", "Idle", SubResource( 18 ), "Rolling", "Idle", SubResource( 19 ), "Idle", "Falling", SubResource( 20 ), "Falling", "Idle", SubResource( 21 ), "Gliding", "Idle", SubResource( 22 ), "Falling", "Gliding", SubResource( 23 ), "Gliding", "Falling", SubResource( 24 ), "Falling", "FallingShooting", SubResource( 28 ), "FallingShooting", "Falling", SubResource( 29 ), "Gliding", "FallingShooting", SubResource( 30 ), "Idle", "StandingShooting", SubResource( 32 ), "StandingShooting", "Idle", SubResource( 33 ) ]
@@ -233,6 +264,9 @@ start_node = "Idle"
 
 [sub_resource type="RectangleShape2D" id=8]
 extents = Vector2( 20, 64 )
+
+[sub_resource type="RectangleShape2D" id=34]
+extents = Vector2( 20, 44 )
 
 [node name="Player" type="KinematicBody2D"]
 collision_mask = 0
@@ -258,8 +292,13 @@ anim_player = NodePath("../AnimationPlayer")
 active = true
 parameters/playback = SubResource( 7 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="StandingHitbox" type="CollisionShape2D" parent="."]
 shape = SubResource( 8 )
+
+[node name="CrouchingHitbox" type="CollisionShape2D" parent="."]
+visible = false
+position = Vector2( 0, 20 )
+shape = SubResource( 34 )
 
 [node name="RollStunTimer" type="Timer" parent="."]
 wait_time = 0.5

@@ -125,6 +125,15 @@ func _roll() -> void:
 	velocity.x = ROLL_SPEED * _get_direction_modifier()
 
 
+func _set_crouching_hitbox(active: bool) -> void:
+	if active:
+		$StandingHitbox.hide()
+		$CrouchingHitbox.show()
+	else:
+		$StandingHitbox.show()
+		$CrouchingHitbox.hide()
+
+
 func _process_directional_movement() -> void:
 	if Input.is_action_pressed("move_left"):
 		velocity.x = -move_speed
