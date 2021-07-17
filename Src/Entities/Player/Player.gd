@@ -36,12 +36,20 @@ func _on_RollStunTimer_timeout():
 	_pop_state()
 
 
+func _on_InvulnTimer_timeout():
+	set_collision_layer_bit(0, true)
+
+
 func hit(side_collided) -> void:
 	_push_state(State.DAMAGED)
+	
+	gliding = false
+	var recoil_direction = -1 * _get_direction_vector(side_collided).x
+	velocity.x = 200 * recoil_direction
 	velocity.y = -300
 	
-	var recoil_direction = -1 * _get_direction_vector(side_collided).x
-	velocity.x = 300 * recoil_direction
+	$Sprite.modulate.a = 0.2
+	set_collision_layer_bit(0, false)
 
 
 func _ready() -> void:
@@ -98,6 +106,8 @@ func _process(delta: float) -> void:
 		State.DAMAGED:
 			if is_on_floor():
 				_pop_state()
+				$InvulnTimer.start()
+				$Sprite/AnimationPlayer.play("Invulnerable")
 
 
 func _physics_process(delta: float) -> void:
@@ -186,3 +196,5 @@ func _update_animation(state: int) -> void:
 			anim_state_machine.travel("StandingShooting")
 		State.FALLING_SHOOTING:
 			anim_state_machine.travel("FallingShooting")
+		State.DAMAGED:
+			anim_state_machine.travel("Damaged")
