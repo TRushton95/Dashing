@@ -5,14 +5,14 @@ onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 enum State { STANDING, CROUCHING, ROLLING, FALLING, STANDING_SHOOTING, FALLING_SHOOTING }
 
 const MAX_FALL_SPEED := 500
-const GRAVITY_ACCELERATION := 20
+const GRAVITY := 20
 const GLIDE_SPEED := 50
 const WALK_SPEED := 200
 const RUN_SPEED := 400
 const JUMP_SPEED := -700
 const ROLL_SPEED := 500
 
-var move_speed := WALK_SPEED
+var speed := WALK_SPEED
 
 var anim_state_machine
 
@@ -45,9 +45,9 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("sprint"):
-		move_speed = RUN_SPEED
+		speed = RUN_SPEED
 	elif Input.is_action_just_released("sprint"):
-		move_speed = WALK_SPEED
+		speed = WALK_SPEED
 		
 	match state_stack[0]:
 		State.STANDING:
@@ -94,7 +94,7 @@ func _physics_process(delta: float) -> void:
 		velocity.y = GLIDE_SPEED
 	else:
 		if velocity.y < MAX_FALL_SPEED:
-			velocity.y = velocity.y + GRAVITY_ACCELERATION
+			velocity.y = velocity.y + GRAVITY
 			
 	velocity = move_and_slide(velocity, Vector2.UP)
 
@@ -131,11 +131,11 @@ func _set_crouching_hitbox(active: bool) -> void:
 
 func _process_directional_movement() -> void:
 	if Input.is_action_pressed("move_left"):
-		velocity.x = -move_speed
+		velocity.x = -speed
 		prev_direction = direction
 		direction = Enums.Direction.LEFT
 	elif Input.is_action_pressed("move_right"):
-		velocity.x = move_speed
+		velocity.x = speed
 		prev_direction = direction
 		direction = Enums.Direction.RIGHT
 	else:

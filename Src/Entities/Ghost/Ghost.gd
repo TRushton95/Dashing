@@ -1,10 +1,10 @@
 extends KinematicBody2D
 
 const MAX_FALL_SPEED := 500
-const GRAVITY_ACCELERATION := 20
-const MOVEMENT_SPEED = 100
+const GRAVITY := 20
+const SPEED = 100
 
-var velocity = Vector2(MOVEMENT_SPEED, 0)
+var velocity = Vector2(SPEED, 0)
 
 
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
@@ -22,11 +22,11 @@ func _on_Hitbox_body_entered(body: PhysicsBody2D) -> void:
 
 func set_direction(direction: int) -> void:
 	if direction == Enums.Direction.LEFT:
-		velocity.x = -MOVEMENT_SPEED
+		velocity.x = -SPEED
 		$Sprite.transform.x = Vector2.LEFT
 		$GroundDetector.position.x = -abs($GroundDetector.position.x)
 	else:
-		velocity.x = MOVEMENT_SPEED
+		velocity.x = SPEED
 		$Sprite.transform.x = Vector2.RIGHT
 		$GroundDetector.position.x = abs($GroundDetector.position.x)
 
@@ -38,6 +38,6 @@ func _physics_process(delta: float) -> void:
 	
 	
 	if velocity.y < MAX_FALL_SPEED:
-		velocity.y = velocity.y + GRAVITY_ACCELERATION
+		velocity.y = velocity.y + GRAVITY
 	
 	velocity = move_and_slide(velocity, Vector2.UP)
