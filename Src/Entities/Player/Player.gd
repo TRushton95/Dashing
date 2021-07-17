@@ -59,7 +59,7 @@ func _process(delta: float) -> void:
 				_push_state(State.STANDING_SHOOTING)
 				velocity.x = 0
 				_shoot()
-			elif Input.is_action_just_pressed("crouch"):
+			elif Input.is_action_pressed("crouch"):
 				velocity.x = 0
 				_push_state(State.CROUCHING)
 			elif Input.is_action_just_pressed("roll"):
@@ -84,7 +84,7 @@ func _process(delta: float) -> void:
 				gliding = false
 				
 		State.CROUCHING:
-			if Input.is_action_just_released("crouch"):
+			if !Input.is_action_pressed("crouch"):
 				_pop_state()
 				
 	$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
