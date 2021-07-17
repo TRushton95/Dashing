@@ -17,6 +17,7 @@ var move_speed := WALK_SPEED
 var anim_state_machine
 
 var velocity := Vector2.ZERO
+var prev_direction = Enums.Direction.RIGHT
 var direction = Enums.Direction.RIGHT
 var gliding := false
 var is_fire_on_cooldown = false
@@ -86,8 +87,6 @@ func _process(delta: float) -> void:
 		State.CROUCHING:
 			if !Input.is_action_pressed("crouch"):
 				_pop_state()
-				
-	$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
 
 
 func _physics_process(delta: float) -> void:
@@ -109,13 +108,9 @@ func _shoot() -> void:
 		return
 	
 	var laser = laser_scene.instance()
-	var delta_x = $Sprite.texture.get_width() / 2
-	
-	var x = position.x + (delta_x * _get_direction_modifier())
-	var y = position.y
 	
 	owner.add_child(laser)
-	laser.init(Vector2(x, y), direction)
+	laser.init($LaserSpawnPoint.global_position, direction)
 	
 	is_fire_on_cooldown = true
 
@@ -137,13 +132,18 @@ func _set_crouching_hitbox(active: bool) -> void:
 func _process_directional_movement() -> void:
 	if Input.is_action_pressed("move_left"):
 		velocity.x = -move_speed
+		prev_direction = direction
 		direction = Enums.Direction.LEFT
 	elif Input.is_action_pressed("move_right"):
 		velocity.x = move_speed
+		prev_direction = direction
 		direction = Enums.Direction.RIGHT
 	else:
 		velocity.x = 0
-
+		
+	if direction != prev_direction:
+		$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
+		$LaserSpawnPoint.position = $LaserSpawnPoint.position.reflect(Vector2.UP)
 
 func _push_state(state: int) -> void:
 	state_stack.push_front(state)

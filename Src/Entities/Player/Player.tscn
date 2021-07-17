@@ -314,5 +314,8 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="LaserSpawnPoint" type="Position2D" parent="."]
+position = Vector2( 64, -28 )
+
 [connection signal="animation_finished" from="Sprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
 [connection signal="timeout" from="RollStunTimer" to="." method="_on_RollStunTimer_timeout"]
