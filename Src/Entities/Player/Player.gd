@@ -110,7 +110,7 @@ func _shoot() -> void:
 
 func _roll() -> void:
 	_push_state(State.ROLLING)
-	velocity.x = ROLL_SPEED * _get_direction_modifier()
+	velocity.x = ROLL_SPEED * _get_direction_vector().x
 
 
 func _set_crouching_hitbox(active: bool) -> void:
@@ -125,26 +125,25 @@ func _set_crouching_hitbox(active: bool) -> void:
 func _handle_directional_input() -> void:
 	if Input.is_action_pressed("move_left"):
 		velocity.x = -speed
-		prev_direction = direction
-		direction = Enums.Direction.LEFT
+		_update_direction(Enums.Direction.LEFT)
 	elif Input.is_action_pressed("move_right"):
 		velocity.x = speed
-		prev_direction = direction
-		direction = Enums.Direction.RIGHT
+		_update_direction(Enums.Direction.RIGHT)
 	else:
 		velocity.x = 0
-		
+
+
+func _update_direction(new_direction: int) -> void:
+	prev_direction = direction
+	direction = new_direction
+	
 	if direction != prev_direction:
-		$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
+		$Sprite.transform.x = _get_direction_vector()
 		$LaserSpawnPoint.position = $LaserSpawnPoint.position.reflect(Vector2.UP)
 
 
-func _has_direction_changed() -> bool:
-	return direction != prev_direction
-
-
-func _get_direction_modifier() -> int:
-	return -1 if direction == Enums.Direction.LEFT else 1
+func _get_direction_vector() -> Vector2:
+	return Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
 
 
 func _push_state(state: int) -> void:
