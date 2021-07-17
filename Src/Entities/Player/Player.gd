@@ -73,10 +73,10 @@ func _process(delta: float) -> void:
 			
 			if Input.is_action_just_pressed("jump"):
 				gliding = true
-				$Sprite/AnimationPlayer.play("Gliding")
+				anim_state_machine.travel("Gliding")
 			elif Input.is_action_just_released("jump"):
 				gliding = false
-				$Sprite/AnimationPlayer.play("Falling")
+				anim_state_machine.travel("Falling")
 				
 			if Input.is_action_just_pressed("shoot"):
 				_shoot()
