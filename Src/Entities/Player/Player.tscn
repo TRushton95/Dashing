@@ -1,4 +1,4 @@
-[gd_scene load_steps=35 format=2]
+[gd_scene load_steps=39 format=2]
 
 [ext_resource path="res://Entities/Player/player_large.png" type="Texture" id=1]
 [ext_resource path="res://Entities/Player/Player.gd" type="Script" id=2]
@@ -31,6 +31,22 @@ tracks/1/keys = {
 "args": [ true ],
 "method": "_set_crouching_hitbox"
 } ]
+}
+
+[sub_resource type="Animation" id=33]
+resource_name = "Damaged"
+loop = true
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 1 ]
 }
 
 [sub_resource type="Animation" id=2]
@@ -188,6 +204,9 @@ tracks/1/keys = {
 [sub_resource type="AnimationNodeAnimation" id=8]
 animation = "Crouching"
 
+[sub_resource type="AnimationNodeAnimation" id=34]
+animation = "Damaged"
+
 [sub_resource type="AnimationNodeAnimation" id=9]
 animation = "Falling"
 
@@ -240,9 +259,15 @@ auto_advance = true
 switch_mode = 2
 auto_advance = true
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=35]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=36]
+
 [sub_resource type="AnimationNodeStateMachine" id=29]
 states/Crouching/node = SubResource( 8 )
 states/Crouching/position = Vector2( 225, 23 )
+states/Damaged/node = SubResource( 34 )
+states/Damaged/position = Vector2( 75, 54 )
 states/Falling/node = SubResource( 9 )
 states/Falling/position = Vector2( 430, 74 )
 states/FallingShooting/node = SubResource( 10 )
@@ -254,8 +279,8 @@ states/Idle/position = Vector2( 225, 129 )
 states/Rolling/node = SubResource( 13 )
 states/Rolling/position = Vector2( 225, 228 )
 states/StandingShooting/node = SubResource( 14 )
-states/StandingShooting/position = Vector2( 44, 129 )
-transitions = [ "Idle", "Crouching", SubResource( 15 ), "Idle", "Rolling", SubResource( 16 ), "Crouching", "Idle", SubResource( 17 ), "Rolling", "Idle", SubResource( 18 ), "Idle", "Falling", SubResource( 19 ), "Falling", "Idle", SubResource( 20 ), "Gliding", "Idle", SubResource( 21 ), "Falling", "Gliding", SubResource( 22 ), "Gliding", "Falling", SubResource( 23 ), "Falling", "FallingShooting", SubResource( 24 ), "FallingShooting", "Falling", SubResource( 25 ), "Gliding", "FallingShooting", SubResource( 26 ), "Idle", "StandingShooting", SubResource( 27 ), "StandingShooting", "Idle", SubResource( 28 ) ]
+states/StandingShooting/position = Vector2( 57, 178 )
+transitions = [ "Idle", "Crouching", SubResource( 15 ), "Idle", "Rolling", SubResource( 16 ), "Crouching", "Idle", SubResource( 17 ), "Rolling", "Idle", SubResource( 18 ), "Idle", "Falling", SubResource( 19 ), "Falling", "Idle", SubResource( 20 ), "Gliding", "Idle", SubResource( 21 ), "Falling", "Gliding", SubResource( 22 ), "Gliding", "Falling", SubResource( 23 ), "Falling", "FallingShooting", SubResource( 24 ), "FallingShooting", "Falling", SubResource( 25 ), "Gliding", "FallingShooting", SubResource( 26 ), "Idle", "StandingShooting", SubResource( 27 ), "StandingShooting", "Idle", SubResource( 28 ), "Idle", "Damaged", SubResource( 35 ), "Damaged", "Idle", SubResource( 36 ) ]
 start_node = "Idle"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=30]
@@ -266,8 +291,10 @@ extents = Vector2( 20, 64 )
 [sub_resource type="RectangleShape2D" id=32]
 extents = Vector2( 20, 44 )
 
-[node name="Player" type="KinematicBody2D"]
-collision_mask = 12
+[node name="Player" type="KinematicBody2D" groups=[
+"player",
+]]
+collision_mask = 8
 script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
@@ -277,6 +304,7 @@ vframes = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
 anims/Crouching = SubResource( 1 )
+anims/Damaged = SubResource( 33 )
 anims/Falling = SubResource( 2 )
 anims/FallingShooting = SubResource( 3 )
 anims/Gliding = SubResource( 4 )

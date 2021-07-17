@@ -13,11 +13,15 @@ func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 
 
 func _on_Hitbox_body_entered(body: PhysicsBody2D) -> void:
-	if body.is_in_group("player_projectiles"):
+	if body.is_in_group("player_attacks"):
 		$Hitbox/CollisionShape2D.set_deferred("disabled", true)
-		$Hurtbox.set_deferred("disabled", true)
+		$CollisionShape2D.set_deferred("disabled", true)
 		set_physics_process(false)
 		$Sprite/AnimationPlayer.play("Dead")
+		
+	if body.is_in_group("player"):
+		var side_collided = Enums.Direction.RIGHT if body.position.x < position.x else Enums.Direction.LEFT
+		body.hit(side_collided)
 
 
 func set_direction(direction: int) -> void:

@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
-enum State { STANDING, CROUCHING, ROLLING, FALLING, STANDING_SHOOTING, FALLING_SHOOTING }
+enum State { STANDING, CROUCHING, ROLLING, FALLING, STANDING_SHOOTING, FALLING_SHOOTING, DAMAGED }
 
 const MAX_FALL_SPEED := 500
 const GRAVITY := 20
@@ -34,6 +34,14 @@ func _on_Roll_animation_finished() -> void:
 
 func _on_RollStunTimer_timeout():
 	_pop_state()
+
+
+func hit(side_collided) -> void:
+	_push_state(State.DAMAGED)
+	velocity.y = -300
+	
+	var recoil_direction = -1 * _get_direction_vector(side_collided).x
+	velocity.x = 300 * recoil_direction
 
 
 func _ready() -> void:
@@ -86,6 +94,10 @@ func _process(delta: float) -> void:
 		State.CROUCHING:
 			if !Input.is_action_pressed("crouch"):
 				_pop_state()
+				
+		State.DAMAGED:
+			if is_on_floor():
+				_pop_state()
 
 
 func _physics_process(delta: float) -> void:
@@ -110,7 +122,7 @@ func _shoot() -> void:
 
 func _roll() -> void:
 	_push_state(State.ROLLING)
-	velocity.x = ROLL_SPEED * _get_direction_vector().x
+	velocity.x = ROLL_SPEED * _get_direction_vector(direction).x
 
 
 func _set_crouching_hitbox(active: bool) -> void:
@@ -138,11 +150,11 @@ func _update_direction(new_direction: int) -> void:
 	direction = new_direction
 	
 	if direction != prev_direction:
-		$Sprite.transform.x = _get_direction_vector()
+		$Sprite.transform.x = _get_direction_vector(direction)
 		$LaserSpawnPoint.position = $LaserSpawnPoint.position.reflect(Vector2.UP)
 
 
-func _get_direction_vector() -> Vector2:
+func _get_direction_vector(direction: int) -> Vector2:
 	return Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
 
 

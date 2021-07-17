@@ -7,7 +7,7 @@
 extents = Vector2( 12, 8 )
 
 [node name="Laser" type="KinematicBody2D" groups=[
-"player_projectiles",
+"player_attacks",
 ]]
 collision_layer = 2
 collision_mask = 0
