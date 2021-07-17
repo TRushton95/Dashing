@@ -14,6 +14,8 @@ const ROLL_SPEED := 500
 
 var move_speed := WALK_SPEED
 
+var anim_state_machine
+
 var velocity := Vector2.ZERO
 var direction = Enums.Direction.RIGHT
 var gliding := false
@@ -30,13 +32,17 @@ func _on_FiringCooldownTimer_timeout() -> void:
 	is_fire_on_cooldown = false
 
 
-func _on_RollTimer_timeout() -> void:
-	$RollStunTimer.start()
+func _on_Roll_animation_finished() -> void:
 	velocity.x = 0
+	$RollStunTimer.start()
 
 
 func _on_RollStunTimer_timeout():
 	_pop_state()
+
+
+func _ready() -> void:
+	anim_state_machine = $Sprite/AnimationTree.get("parameters/playback")
 
 
 func _process(delta: float) -> void:
@@ -120,7 +126,6 @@ func _shoot() -> void:
 func _roll() -> void:
 	_push_state(State.ROLLING)
 	velocity.x = ROLL_SPEED * _get_direction_modifier()
-	$RollTimer.start()
 
 
 func _process_directional_movement() -> void:
@@ -154,10 +159,10 @@ func _pop_state() -> void:
 func _update_animation(state: int) -> void:
 	match state:
 		State.STANDING:
-			$Sprite/AnimationPlayer.play("Idle")
+			anim_state_machine.travel("Idle")
 		State.CROUCHING:
-			$Sprite/AnimationPlayer.play("Crouching")
+			anim_state_machine.travel("Crouching")
 		State.ROLLING:
-			$Sprite/AnimationPlayer.play("Rolling")
+			anim_state_machine.travel("Rolling")
 		State.FALLING:
-			$Sprite/AnimationPlayer.play("Falling")
+			anim_state_machine.travel("Falling")

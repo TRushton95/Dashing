@@ -1,9 +1,9 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=25 format=2]
 
 [ext_resource path="res://Entities/Player/player_large.png" type="Texture" id=1]
 [ext_resource path="res://Entities/Player/Player.gd" type="Script" id=2]
 
-[sub_resource type="Animation" id=4]
+[sub_resource type="Animation" id=1]
 resource_name = "Crouching"
 loop = true
 tracks/0/type = "value"
@@ -19,7 +19,7 @@ tracks/0/keys = {
 "values": [ 1 ]
 }
 
-[sub_resource type="Animation" id=3]
+[sub_resource type="Animation" id=2]
 resource_name = "Falling"
 loop = true
 tracks/0/type = "value"
@@ -35,7 +35,7 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="Animation" id=5]
+[sub_resource type="Animation" id=3]
 resource_name = "Gliding"
 loop = true
 tracks/0/type = "value"
@@ -51,8 +51,7 @@ tracks/0/keys = {
 "values": [ 3 ]
 }
 
-[sub_resource type="Animation" id=2]
-resource_name = "Idle"
+[sub_resource type="Animation" id=4]
 loop = true
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:frame")
@@ -67,9 +66,9 @@ tracks/0/keys = {
 "values": [ 0 ]
 }
 
-[sub_resource type="Animation" id=6]
+[sub_resource type="Animation" id=5]
 resource_name = "Rolling"
-loop = true
+length = 0.5
 tracks/0/type = "value"
 tracks/0/path = NodePath(".:frame")
 tracks/0/interp = 1
@@ -82,8 +81,73 @@ tracks/0/keys = {
 "update": 1,
 "values": [ 1 ]
 }
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [ null ],
+"method": "_on_Roll_animation_finished"
+} ]
+}
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="AnimationNodeAnimation" id=9]
+animation = "Crouching"
+
+[sub_resource type="AnimationNodeAnimation" id=10]
+animation = "Falling"
+
+[sub_resource type="AnimationNodeAnimation" id=11]
+animation = "Gliding"
+
+[sub_resource type="AnimationNodeAnimation" id=12]
+animation = "Idle"
+
+[sub_resource type="AnimationNodeAnimation" id=13]
+animation = "Rolling"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=16]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=17]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=18]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=19]
+switch_mode = 2
+auto_advance = true
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=20]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=21]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=22]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=23]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=24]
+
+[sub_resource type="AnimationNodeStateMachine" id=6]
+states/Crouching/node = SubResource( 9 )
+states/Crouching/position = Vector2( 212, 22 )
+states/Falling/node = SubResource( 10 )
+states/Falling/position = Vector2( 430, 74 )
+states/Gliding/node = SubResource( 11 )
+states/Gliding/position = Vector2( 430, 190 )
+states/Idle/node = SubResource( 12 )
+states/Idle/position = Vector2( 212, 129 )
+states/Rolling/node = SubResource( 13 )
+states/Rolling/position = Vector2( 212, 229 )
+transitions = [ "Idle", "Crouching", SubResource( 16 ), "Idle", "Rolling", SubResource( 17 ), "Crouching", "Idle", SubResource( 18 ), "Rolling", "Idle", SubResource( 19 ), "Idle", "Falling", SubResource( 20 ), "Falling", "Idle", SubResource( 21 ), "Gliding", "Idle", SubResource( 22 ), "Falling", "Gliding", SubResource( 23 ), "Gliding", "Falling", SubResource( 24 ) ]
+start_node = "Idle"
+
+[sub_resource type="AnimationNodeStateMachinePlayback" id=7]
+
+[sub_resource type="RectangleShape2D" id=8]
 extents = Vector2( 20, 64 )
 
 [node name="Player" type="KinematicBody2D"]
@@ -96,14 +160,20 @@ hframes = 2
 vframes = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
-anims/Crouching = SubResource( 4 )
-anims/Falling = SubResource( 3 )
-anims/Gliding = SubResource( 5 )
-anims/Idle = SubResource( 2 )
-anims/Rolling = SubResource( 6 )
+anims/Crouching = SubResource( 1 )
+anims/Falling = SubResource( 2 )
+anims/Gliding = SubResource( 3 )
+anims/Idle = SubResource( 4 )
+anims/Rolling = SubResource( 5 )
+
+[node name="AnimationTree" type="AnimationTree" parent="Sprite"]
+tree_root = SubResource( 6 )
+anim_player = NodePath("../AnimationPlayer")
+active = true
+parameters/playback = SubResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
+shape = SubResource( 8 )
 
 [node name="FiringAnimTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -111,10 +181,6 @@ one_shot = true
 
 [node name="FiringCooldownTimer" type="Timer" parent="."]
 wait_time = 0.5
-one_shot = true
-
-[node name="RollTimer" type="Timer" parent="."]
-wait_time = 0.25
 one_shot = true
 
 [node name="RollStunTimer" type="Timer" parent="."]
@@ -133,7 +199,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[connection signal="animation_finished" from="Sprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
 [connection signal="timeout" from="FiringAnimTimer" to="." method="_on_FiringAnimTimer_timeout"]
 [connection signal="timeout" from="FiringCooldownTimer" to="." method="_on_FiringCooldownTimer_timeout"]
-[connection signal="timeout" from="RollTimer" to="." method="_on_RollTimer_timeout"]
 [connection signal="timeout" from="RollStunTimer" to="." method="_on_RollStunTimer_timeout"]
