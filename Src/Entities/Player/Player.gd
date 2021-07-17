@@ -13,15 +13,12 @@ const JUMP_SPEED := -700
 const ROLL_SPEED := 500
 
 var speed := WALK_SPEED
-
-var anim_state_machine
-
 var velocity := Vector2.ZERO
 var prev_direction = Enums.Direction.RIGHT
 var direction = Enums.Direction.RIGHT
 var gliding := false
 var is_fire_on_cooldown = false
-
+var anim_state_machine
 var state_stack = [ State.STANDING ]
 
 
@@ -51,7 +48,7 @@ func _process(delta: float) -> void:
 		
 	match state_stack[0]:
 		State.STANDING:
-			_process_directional_movement()
+			_handle_directional_input()
 				
 			if Input.is_action_just_pressed("jump"):
 				_push_state(State.FALLING)
@@ -67,7 +64,7 @@ func _process(delta: float) -> void:
 				_roll()
 				
 		State.FALLING:
-			_process_directional_movement()
+			_handle_directional_input()
 			
 			if Input.is_action_just_pressed("jump"):
 				gliding = true
@@ -99,19 +96,13 @@ func _physics_process(delta: float) -> void:
 	velocity = move_and_slide(velocity, Vector2.UP)
 
 
-func _get_direction_modifier() -> int:
-	return -1 if direction == Enums.Direction.LEFT else 1
-
-
 func _shoot() -> void:
 	if is_fire_on_cooldown:
 		return
 	
 	var laser = laser_scene.instance()
-	
 	owner.add_child(laser)
 	laser.init($LaserSpawnPoint.global_position, direction)
-	
 	is_fire_on_cooldown = true
 
 
@@ -129,7 +120,7 @@ func _set_crouching_hitbox(active: bool) -> void:
 		$CrouchingHitbox.hide()
 
 
-func _process_directional_movement() -> void:
+func _handle_directional_input() -> void:
 	if Input.is_action_pressed("move_left"):
 		velocity.x = -speed
 		prev_direction = direction
@@ -144,6 +135,15 @@ func _process_directional_movement() -> void:
 	if direction != prev_direction:
 		$Sprite.transform.x = Vector2.LEFT if direction == Enums.Direction.LEFT else Vector2.RIGHT
 		$LaserSpawnPoint.position = $LaserSpawnPoint.position.reflect(Vector2.UP)
+
+
+func _has_direction_changed() -> bool:
+	return direction != prev_direction
+
+
+func _get_direction_modifier() -> int:
+	return -1 if direction == Enums.Direction.LEFT else 1
+
 
 func _push_state(state: int) -> void:
 	state_stack.push_front(state)
