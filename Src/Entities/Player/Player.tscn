@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=2]
+[gd_scene load_steps=34 format=2]
 
 [ext_resource path="res://Entities/Player/player_large.png" type="Texture" id=1]
 [ext_resource path="res://Entities/Player/Player.gd" type="Script" id=2]
@@ -32,7 +32,37 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 2 ]
+"values": [ 3 ]
+}
+
+[sub_resource type="Animation" id=26]
+resource_name = "FallingShooting"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 5 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "on_firing_animation_finished"
+} ]
 }
 
 [sub_resource type="Animation" id=3]
@@ -48,7 +78,7 @@ tracks/0/keys = {
 "times": PoolRealArray( 0 ),
 "transitions": PoolRealArray( 1 ),
 "update": 1,
-"values": [ 3 ]
+"values": [ 4 ]
 }
 
 [sub_resource type="Animation" id=4]
@@ -96,11 +126,44 @@ tracks/1/keys = {
 } ]
 }
 
+[sub_resource type="Animation" id=25]
+resource_name = "StandingShooting"
+length = 0.5
+tracks/0/type = "value"
+tracks/0/path = NodePath(".:frame")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/keys = {
+"times": PoolRealArray( 0 ),
+"transitions": PoolRealArray( 1 ),
+"update": 1,
+"values": [ 2 ]
+}
+tracks/1/type = "method"
+tracks/1/path = NodePath("..")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/keys = {
+"times": PoolRealArray( 0.5 ),
+"transitions": PoolRealArray( 1 ),
+"values": [ {
+"args": [  ],
+"method": "on_firing_animation_finished"
+} ]
+}
+
 [sub_resource type="AnimationNodeAnimation" id=9]
 animation = "Crouching"
 
 [sub_resource type="AnimationNodeAnimation" id=10]
 animation = "Falling"
+
+[sub_resource type="AnimationNodeAnimation" id=27]
+animation = "FallingShooting"
 
 [sub_resource type="AnimationNodeAnimation" id=11]
 animation = "Gliding"
@@ -110,6 +173,9 @@ animation = "Idle"
 
 [sub_resource type="AnimationNodeAnimation" id=13]
 animation = "Rolling"
+
+[sub_resource type="AnimationNodeAnimation" id=31]
+animation = "StandingShooting"
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=16]
 
@@ -131,18 +197,36 @@ auto_advance = true
 
 [sub_resource type="AnimationNodeStateMachineTransition" id=24]
 
+[sub_resource type="AnimationNodeStateMachineTransition" id=28]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=29]
+switch_mode = 2
+auto_advance = true
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=30]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=32]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id=33]
+switch_mode = 2
+auto_advance = true
+
 [sub_resource type="AnimationNodeStateMachine" id=6]
 states/Crouching/node = SubResource( 9 )
-states/Crouching/position = Vector2( 212, 22 )
+states/Crouching/position = Vector2( 225, 23 )
 states/Falling/node = SubResource( 10 )
 states/Falling/position = Vector2( 430, 74 )
+states/FallingShooting/node = SubResource( 27 )
+states/FallingShooting/position = Vector2( 633, 142 )
 states/Gliding/node = SubResource( 11 )
 states/Gliding/position = Vector2( 430, 190 )
 states/Idle/node = SubResource( 12 )
-states/Idle/position = Vector2( 212, 129 )
+states/Idle/position = Vector2( 225, 129 )
 states/Rolling/node = SubResource( 13 )
-states/Rolling/position = Vector2( 212, 229 )
-transitions = [ "Idle", "Crouching", SubResource( 16 ), "Idle", "Rolling", SubResource( 17 ), "Crouching", "Idle", SubResource( 18 ), "Rolling", "Idle", SubResource( 19 ), "Idle", "Falling", SubResource( 20 ), "Falling", "Idle", SubResource( 21 ), "Gliding", "Idle", SubResource( 22 ), "Falling", "Gliding", SubResource( 23 ), "Gliding", "Falling", SubResource( 24 ) ]
+states/Rolling/position = Vector2( 225, 229 )
+states/StandingShooting/node = SubResource( 31 )
+states/StandingShooting/position = Vector2( 44, 129 )
+transitions = [ "Idle", "Crouching", SubResource( 16 ), "Idle", "Rolling", SubResource( 17 ), "Crouching", "Idle", SubResource( 18 ), "Rolling", "Idle", SubResource( 19 ), "Idle", "Falling", SubResource( 20 ), "Falling", "Idle", SubResource( 21 ), "Gliding", "Idle", SubResource( 22 ), "Falling", "Gliding", SubResource( 23 ), "Gliding", "Falling", SubResource( 24 ), "Falling", "FallingShooting", SubResource( 28 ), "FallingShooting", "Falling", SubResource( 29 ), "Gliding", "FallingShooting", SubResource( 30 ), "Idle", "StandingShooting", SubResource( 32 ), "StandingShooting", "Idle", SubResource( 33 ) ]
 start_node = "Idle"
 
 [sub_resource type="AnimationNodeStateMachinePlayback" id=7]
@@ -156,15 +240,17 @@ script = ExtResource( 2 )
 
 [node name="Sprite" type="Sprite" parent="."]
 texture = ExtResource( 1 )
-hframes = 2
+hframes = 3
 vframes = 2
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
 anims/Crouching = SubResource( 1 )
 anims/Falling = SubResource( 2 )
+anims/FallingShooting = SubResource( 26 )
 anims/Gliding = SubResource( 3 )
 anims/Idle = SubResource( 4 )
 anims/Rolling = SubResource( 5 )
+anims/StandingShooting = SubResource( 25 )
 
 [node name="AnimationTree" type="AnimationTree" parent="Sprite"]
 tree_root = SubResource( 6 )
@@ -174,14 +260,6 @@ parameters/playback = SubResource( 7 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource( 8 )
-
-[node name="FiringAnimTimer" type="Timer" parent="."]
-wait_time = 0.5
-one_shot = true
-
-[node name="FiringCooldownTimer" type="Timer" parent="."]
-wait_time = 0.5
-one_shot = true
 
 [node name="RollStunTimer" type="Timer" parent="."]
 wait_time = 0.5
@@ -200,6 +278,4 @@ __meta__ = {
 }
 
 [connection signal="animation_finished" from="Sprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
-[connection signal="timeout" from="FiringAnimTimer" to="." method="_on_FiringAnimTimer_timeout"]
-[connection signal="timeout" from="FiringCooldownTimer" to="." method="_on_FiringCooldownTimer_timeout"]
 [connection signal="timeout" from="RollStunTimer" to="." method="_on_RollStunTimer_timeout"]

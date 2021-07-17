@@ -2,7 +2,7 @@ extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
 
-enum State { STANDING, CROUCHING, ROLLING, FALLING, FIRING }
+enum State { STANDING, CROUCHING, ROLLING, FALLING, STANDING_SHOOTING, FALLING_SHOOTING }
 
 const MAX_FALL_SPEED := 500
 const GRAVITY_ACCELERATION := 20
@@ -24,12 +24,9 @@ var is_fire_on_cooldown = false
 var state_stack = [ State.STANDING ]
 
 
-func _on_FiringAnimTimer_timeout() -> void:
-	_pop_state()
-
-
-func _on_FiringCooldownTimer_timeout() -> void:
+func on_firing_animation_finished() -> void:
 	is_fire_on_cooldown = false
+	_pop_state()
 
 
 func _on_Roll_animation_finished() -> void:
@@ -59,7 +56,7 @@ func _process(delta: float) -> void:
 				_push_state(State.FALLING)
 				velocity.y = JUMP_SPEED
 			elif Input.is_action_just_pressed("shoot"):
-				_push_state(State.FIRING)
+				_push_state(State.STANDING_SHOOTING)
 				velocity.x = 0
 				_shoot()
 			elif Input.is_action_just_pressed("crouch"):
@@ -79,6 +76,7 @@ func _process(delta: float) -> void:
 				anim_state_machine.travel("Falling")
 				
 			if Input.is_action_just_pressed("shoot"):
+				_push_state(State.FALLING_SHOOTING)
 				_shoot()
 			
 			if is_on_floor():
@@ -120,7 +118,6 @@ func _shoot() -> void:
 	laser.init(Vector2(x, y), direction)
 	
 	is_fire_on_cooldown = true
-	$FiringCooldownTimer.start()
 
 
 func _roll() -> void:
@@ -143,9 +140,6 @@ func _push_state(state: int) -> void:
 	state_stack.push_front(state)
 	_update_animation(state)
 	$StateLabel.text = State.keys()[state]
-	
-	if state == State.FIRING:
-		$FiringAnimTimer.start()
 
 
 func _pop_state() -> void:
@@ -166,3 +160,7 @@ func _update_animation(state: int) -> void:
 			anim_state_machine.travel("Rolling")
 		State.FALLING:
 			anim_state_machine.travel("Falling")
+		State.STANDING_SHOOTING:
+			anim_state_machine.travel("StandingShooting")
+		State.FALLING_SHOOTING:
+			anim_state_machine.travel("FallingShooting")
