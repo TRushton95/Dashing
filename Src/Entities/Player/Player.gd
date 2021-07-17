@@ -49,9 +49,11 @@ func _process(delta: float) -> void:
 	match state_stack[0]:
 		State.STANDING:
 			_handle_directional_input()
+			
+			if !is_on_floor():
+				_push_state(State.FALLING)
 				
 			if Input.is_action_just_pressed("jump"):
-				_push_state(State.FALLING)
 				velocity.y = JUMP_SPEED
 			elif Input.is_action_just_pressed("shoot"):
 				_push_state(State.STANDING_SHOOTING)
