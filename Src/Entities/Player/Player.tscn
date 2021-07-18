@@ -183,10 +183,10 @@ tracks/0/keys = {
 "values": [ 2 ]
 }
 
-[sub_resource type="RectangleShape2D" id=36]
+[sub_resource type="RectangleShape2D" id=10]
 extents = Vector2( 20, 64 )
 
-[sub_resource type="RectangleShape2D" id=37]
+[sub_resource type="RectangleShape2D" id=11]
 extents = Vector2( 20, 44 )
 
 [node name="Player" type="KinematicBody2D" groups=[
@@ -213,12 +213,12 @@ anims/Rolling = SubResource( 8 )
 anims/StandingShooting = SubResource( 9 )
 
 [node name="StandingHitbox" type="CollisionShape2D" parent="."]
-shape = SubResource( 36 )
+shape = SubResource( 10 )
 
 [node name="CrouchingHitbox" type="CollisionShape2D" parent="."]
 visible = false
 position = Vector2( 0, 20 )
-shape = SubResource( 37 )
+shape = SubResource( 11 )
 
 [node name="RollStunTimer" type="Timer" parent="."]
 wait_time = 0.5

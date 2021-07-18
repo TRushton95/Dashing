@@ -1,3 +1,4 @@
+class_name Player
 extends KinematicBody2D
 
 onready var laser_scene = preload("res://Entities/Laser/Laser.tscn")
@@ -44,7 +45,7 @@ func _on_InvulnTimer_timeout() -> void:
 	set_collision_layer_bit(0, true)
 
 
-func hit(side_collided) -> void:
+func hit(side_collided: int) -> void:
 	_push_state(State.DAMAGED)
 	
 	gliding = false
@@ -54,6 +55,10 @@ func hit(side_collided) -> void:
 	
 	$Sprite.modulate.a = 0.2
 	set_collision_layer_bit(0, false)
+
+
+func get_bounds() -> Rect2:
+	return get_node("Sprite").get_rect()
 
 
 func _process(delta: float) -> void:
