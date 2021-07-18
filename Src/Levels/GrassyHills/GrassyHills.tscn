@@ -57,6 +57,8 @@ position = Vector2( 224, 352 )
 
 [node name="Ghost" parent="." instance=ExtResource( 3 )]
 position = Vector2( 516, 396 )
+z_index = 1
 
 [node name="Player" parent="." instance=ExtResource( 2 )]
 position = Vector2( 64, 408 )
+z_index = 2
