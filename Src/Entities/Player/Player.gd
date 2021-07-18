@@ -12,14 +12,26 @@ const RUN_SPEED := 400
 const JUMP_SPEED := -700
 const ROLL_SPEED := 500
 
+onready var anim_player = $Sprite/AnimationPlayer
+
 var speed := WALK_SPEED
 var velocity := Vector2.ZERO
 var prev_direction = Enums.Direction.RIGHT
 var direction = Enums.Direction.RIGHT
 var gliding := false
 var is_fire_on_cooldown = false
-var anim_state_machine
 var state_stack = [ State.STANDING ]
+
+
+
+func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
+	match anim_name:
+		"StandingShooting", "FallingShooting":
+			is_fire_on_cooldown = false
+			_pop_state()
+		"Rolling":
+			velocity.x = 0
+			$RollStunTimer.start()
 
 
 func on_firing_animation_finished() -> void:
@@ -52,10 +64,6 @@ func hit(side_collided) -> void:
 	set_collision_layer_bit(0, false)
 
 
-func _ready() -> void:
-	anim_state_machine = $Sprite/AnimationTree.get("parameters/playback")
-
-
 func _process(delta: float) -> void:
 	if Input.is_action_just_pressed("sprint"):
 		speed = RUN_SPEED
@@ -86,10 +94,10 @@ func _process(delta: float) -> void:
 			
 			if Input.is_action_just_pressed("jump"):
 				gliding = true
-				anim_state_machine.travel("Gliding")
+				anim_player.play("Gliding")
 			elif Input.is_action_just_released("jump"):
 				gliding = false
-				anim_state_machine.travel("Falling")
+				anim_player.play("Falling")
 				
 			if Input.is_action_just_pressed("shoot"):
 				_push_state(State.FALLING_SHOOTING)
@@ -107,7 +115,7 @@ func _process(delta: float) -> void:
 			if is_on_floor():
 				_pop_state()
 				$InvulnTimer.start()
-				$Sprite/AnimationPlayer.play("Invulnerable")
+				anim_player.play("Invulnerable")
 
 
 func _physics_process(delta: float) -> void:
@@ -185,16 +193,16 @@ func _pop_state() -> void:
 func _update_animation(state: int) -> void:
 	match state:
 		State.STANDING:
-			anim_state_machine.travel("Idle")
+			anim_player.play("Idle")
 		State.CROUCHING:
-			anim_state_machine.travel("Crouching")
+			anim_player.play("Crouching")
 		State.ROLLING:
-			anim_state_machine.travel("Rolling")
+			anim_player.play("Rolling")
 		State.FALLING:
-			anim_state_machine.travel("Falling")
+			anim_player.play("Falling")
 		State.STANDING_SHOOTING:
-			anim_state_machine.travel("StandingShooting")
+			anim_player.play("StandingShooting")
 		State.FALLING_SHOOTING:
-			anim_state_machine.travel("FallingShooting")
+			anim_player.play("FallingShooting")
 		State.DAMAGED:
-			anim_state_machine.travel("Damaged")
+			anim_player.play("Damaged")
