@@ -23,32 +23,24 @@ var is_fire_on_cooldown = false
 var state_stack = [ State.STANDING ]
 
 
-
 func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 	match anim_name:
 		"StandingShooting", "FallingShooting":
-			is_fire_on_cooldown = false
 			_pop_state()
 		"Rolling":
 			velocity.x = 0
 			$RollStunTimer.start()
 
 
-func on_firing_animation_finished() -> void:
+func _on_FiringCooldownTimer_timeout() -> void:
 	is_fire_on_cooldown = false
+
+
+func _on_RollStunTimer_timeout() -> void:
 	_pop_state()
 
 
-func _on_Roll_animation_finished() -> void:
-	velocity.x = 0
-	$RollStunTimer.start()
-
-
-func _on_RollStunTimer_timeout():
-	_pop_state()
-
-
-func _on_InvulnTimer_timeout():
+func _on_InvulnTimer_timeout() -> void:
 	set_collision_layer_bit(0, true)
 
 
@@ -80,9 +72,10 @@ func _process(delta: float) -> void:
 			if Input.is_action_just_pressed("jump"):
 				velocity.y = JUMP_SPEED
 			elif Input.is_action_just_pressed("shoot"):
-				_push_state(State.STANDING_SHOOTING)
-				velocity.x = 0
-				_shoot()
+				if !is_fire_on_cooldown:
+					_push_state(State.STANDING_SHOOTING)
+					velocity.x = 0
+					_shoot()
 			elif Input.is_action_pressed("crouch"):
 				velocity.x = 0
 				_push_state(State.CROUCHING)
@@ -100,8 +93,9 @@ func _process(delta: float) -> void:
 				anim_player.play("Falling")
 				
 			if Input.is_action_just_pressed("shoot"):
-				_push_state(State.FALLING_SHOOTING)
-				_shoot()
+				if !is_fire_on_cooldown:
+					_push_state(State.FALLING_SHOOTING)
+					_shoot()
 			
 			if is_on_floor():
 				_pop_state()
@@ -109,6 +103,10 @@ func _process(delta: float) -> void:
 				
 		State.CROUCHING:
 			if !Input.is_action_pressed("crouch"):
+				_pop_state()
+				
+		State.FALLING_SHOOTING:
+			if is_on_floor():
 				_pop_state()
 				
 		State.DAMAGED:
@@ -129,13 +127,11 @@ func _physics_process(delta: float) -> void:
 
 
 func _shoot() -> void:
-	if is_fire_on_cooldown:
-		return
-	
 	var laser = laser_scene.instance()
 	owner.add_child(laser)
 	laser.init($LaserSpawnPoint.global_position, direction)
 	is_fire_on_cooldown = true
+	$FiringCooldownTimer.start()
 
 
 func _roll() -> void:

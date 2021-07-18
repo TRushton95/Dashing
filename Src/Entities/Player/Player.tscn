@@ -199,6 +199,7 @@ script = ExtResource( 2 )
 texture = ExtResource( 1 )
 hframes = 3
 vframes = 2
+frame = 5
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="Sprite"]
 anims/Crouching = SubResource( 1 )
@@ -226,6 +227,10 @@ one_shot = true
 [node name="InvulnTimer" type="Timer" parent="."]
 wait_time = 2.0
 
+[node name="FiringCooldownTimer" type="Timer" parent="."]
+wait_time = 0.5
+one_shot = true
+
 [node name="StateLabel" type="Label" parent="."]
 margin_left = -52.0
 margin_top = -92.0
@@ -244,3 +249,4 @@ position = Vector2( 64, -28 )
 [connection signal="animation_finished" from="Sprite/AnimationPlayer" to="." method="_on_AnimationPlayer_animation_finished"]
 [connection signal="timeout" from="RollStunTimer" to="." method="_on_RollStunTimer_timeout"]
 [connection signal="timeout" from="InvulnTimer" to="." method="_on_InvulnTimer_timeout"]
+[connection signal="timeout" from="FiringCooldownTimer" to="." method="_on_FiringCooldownTimer_timeout"]
