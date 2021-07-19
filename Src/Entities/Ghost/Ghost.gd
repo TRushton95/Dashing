@@ -12,7 +12,7 @@ func _on_AnimationPlayer_animation_finished(anim_name: String) -> void:
 		queue_free()
 
 
-func _on_Hitbox_body_entered(body: PhysicsBody2D) -> void:
+func _on_Hitbox_body_entered(body: Node) -> void:
 	if body.is_in_group("player_attacks"):
 		$Hitbox/CollisionShape2D.set_deferred("disabled", true)
 		$CollisionShape2D.set_deferred("disabled", true)
