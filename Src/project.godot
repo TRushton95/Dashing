@@ -28,6 +28,10 @@ config/icon="res://icon.png"
 
 Enums="*res://Global/Enums.gd"
 
+[debug]
+
+shapes/collision/shape_color=Color( 1, 1, 1, 0.419608 )
+
 [input]
 
 move_left={
